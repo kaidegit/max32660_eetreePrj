@@ -42,10 +42,10 @@ int main() {
     OLED_Clear();
     SHT30_Reset();
     SHT30_Init();
-    maxim_max30102_reset();
-    mxc_delay(MXC_DELAY_MSEC(1000));
-    maxim_max30102_read_reg(0, &uch_dummy);
-    maxim_max30102_init();
+//    maxim_max30102_reset();
+//    mxc_delay(MXC_DELAY_MSEC(1000));
+//    maxim_max30102_read_reg(0, &uch_dummy);
+//    maxim_max30102_init();
 
     OLED_ShowChinese(96, 0, 0);         //体
     OLED_ShowChinese(112, 0, 1);        //温
@@ -58,10 +58,10 @@ int main() {
         sprintf(ch, "%.1f", temperature);
         OLED_ShowString(96, 4, ch, 16);
 
-//        LED_On(0);
-//        mxc_delay(MXC_DELAY_MSEC(500));
-//        LED_Off(0);
-//        mxc_delay(MXC_DELAY_MSEC(1500));
+        LED_On(0);
+        mxc_delay(MXC_DELAY_MSEC(500));
+        LED_Off(0);
+        mxc_delay(MXC_DELAY_MSEC(1500));
 
         nowTime = GetNowTime();
         sprintf(ch, "%02d:%02d:%02d", nowTime.hour, nowTime.minute, nowTime.second);
