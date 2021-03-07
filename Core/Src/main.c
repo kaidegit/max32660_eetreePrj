@@ -7,45 +7,50 @@
 #include "sht30.h"
 #include "rtc.h"
 #include "time.h"
-#include "algorithm.h"
-#include "max30102.h"
+#include "uart.h"
+#include "notifications.h"
+//#include "MAX30102.h"
 
-#define MAX_BRIGHTNESS 255
+//#define MAX30102_INT_Port                PORT_0
+//#define MAX30102_INT_Pin                 PIN_4
 
-uint32_t aun_ir_buffer[500]; //IR LED sensor data
-int32_t n_ir_buffer_length;    //data length
-uint32_t aun_red_buffer[500];    //Red LED sensor data
-int32_t n_sp02; //SPO2 value
-int8_t ch_spo2_valid;   //indicator to show if the SP02 calculation is valid
-int32_t n_heart_rate;   //heart rate value
-int8_t ch_hr_valid;    //indicator to show if the heart rate calculation is valid
-uint8_t uch_dummy;
+void UART0_IRQHandler(void) {
+    printf("uartirq\n");
+    UART_Handler(MXC_UART0);
+}
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 
 int main() {
     uint8_t recv_dat[6] = {0};
     float temperature = 0.0;
     float humidity = 0.0;
     char ch[30];
-    sys_cfg_rtc_t sys_cfg;
     time nowTime;
-    uint32_t un_min, un_max, un_prev_data;  //variables to calculate the on-board LED brightness that reflects the heartbeats
-    int i;
-    int32_t n_brightness;
-    float f_temp;
 
     I2C_Init(MXC_I2C1, I2C_STD_MODE, NULL);
+
+    sys_cfg_rtc_t sys_cfg;
     sys_cfg.tmr = MXC_TMR0;
     RTC_Init(MXC_RTC, 0, 0, &sys_cfg);
     RTC_EnableRTCE(MXC_RTC);
+
+    My_UART0_Init();
+
+//    gpio_cfg_t gpio_in;
+//    gpio_in.port = MAX30102_INT_Port;
+//    gpio_in.mask = MAX30102_INT_Pin;
+//    gpio_in.pad = GPIO_PAD_PULL_UP;
+//    gpio_in.func = GPIO_FUNC_IN;
+//    GPIO_Config(&gpio_in);
 
     OLED_Init();
     OLED_Clear();
     SHT30_Reset();
     SHT30_Init();
-//    maxim_max30102_reset();
-//    mxc_delay(MXC_DELAY_MSEC(1000));
-//    maxim_max30102_read_reg(0, &uch_dummy);
-//    maxim_max30102_init();
+    Uart_Start_Receive();
+//    Max30102_Init();
 
     OLED_ShowChinese(96, 0, 0);         //体
     OLED_ShowChinese(112, 0, 1);        //温
@@ -58,13 +63,22 @@ int main() {
         sprintf(ch, "%.1f", temperature);
         OLED_ShowString(96, 4, ch, 16);
 
+
+//        Max30102_Task();
+//        if (!GPIO_InGet(&gpio_in)){
+//            Max30102_InterruptCallback();
+//        }
+//        printf("HR: %d\n\rSpO2: %d\n\r", Max30102_GetHeartRate(), Max30102_GetSpO2Value());
+
         LED_On(0);
-        mxc_delay(MXC_DELAY_MSEC(500));
+        mxc_delay(MXC_DELAY_MSEC(300));
         LED_Off(0);
-        mxc_delay(MXC_DELAY_MSEC(1500));
+        mxc_delay(MXC_DELAY_MSEC(300));
 
         nowTime = GetNowTime();
         sprintf(ch, "%02d:%02d:%02d", nowTime.hour, nowTime.minute, nowTime.second);
         OLED_ShowString(32, 4, ch, 12);
     }
 }
+
+#pragma clang diagnostic pop
