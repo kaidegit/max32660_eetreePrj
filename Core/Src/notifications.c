@@ -11,7 +11,9 @@
 #include "string.h"
 
 uint8_t uartRcv = 0;
-uint8_t revBuf[255] = {0};
+char revBuf[255] = {0};
+char notificationTitle[30];
+char notificationMessage[255];
 
 static uart_req_t read_req = {
         .data = &uartRcv,
@@ -42,12 +44,22 @@ void My_UART0_Init() {
 void read_cb(uart_req_t *req, int error) {
     static uint8_t position = 0;
     static bool recording = false;
+    int i = 0;
     if (uartRcv == '\"') {   //从"开始记录，到"结束记录
         if (!recording) {    //如果还未开始记录，开始记录
             recording = true;
         } else {             //如果已经开始记录，结束记录并显示
             position = 0;
             printf("%s", revBuf);
+            memset(notificationTitle,0,sizeof(notificationTitle));
+            memset(notificationMessage,0, sizeof(notificationMessage));
+            //分离标题和内容。上位机中用:分割
+            for (i = 0; (i < strlen(revBuf)) && (revBuf[i] != ':'); i++) {
+                notificationTitle[i] = revBuf[i];
+            }
+            if (i != strlen(revBuf)){
+                strcpy(revBuf + i, notificationMessage);
+            }
             //TODO display the notification
             memset(revBuf, 0, sizeof(revBuf));
         }

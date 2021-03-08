@@ -5,8 +5,9 @@
 #include "time.h"
 #include "rtc.h"
 
-time GetNowTime(){
-    time nowTime;
+time nowTime;
+
+void GetNowTime(){
     uint32_t day, hr, min, sec;
 
     const uint32_t SECS_PER_MIN = 60;
@@ -28,6 +29,4 @@ time GetNowTime(){
     nowTime.hour = hr;
     nowTime.minute = min;
     nowTime.second = sec;
-
-    return nowTime;
 }

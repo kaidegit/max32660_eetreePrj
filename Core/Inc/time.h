@@ -14,6 +14,6 @@ typedef struct {
     uint8_t second;
 }time;
 
-time GetNowTime();
+void GetNowTime();
 
 #endif //MAX32660_I2C_TIME_H

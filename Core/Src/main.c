@@ -19,13 +19,14 @@ void UART0_IRQHandler(void) {
     UART_Handler(MXC_UART0);
 }
 
+float temperature = 0.0;
+float humidity = 0.0;
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
 int main() {
     uint8_t recv_dat[6] = {0};
-    float temperature = 0.0;
-    float humidity = 0.0;
     char ch[30];
     time nowTime;
 
