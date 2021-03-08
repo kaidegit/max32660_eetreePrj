@@ -21,6 +21,11 @@ void UART0_IRQHandler(void) {
 
 float temperature = 0.0;
 float humidity = 0.0;
+extern time nowTime;
+
+char weekStr[7][3] = {
+        "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
+};
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -28,17 +33,15 @@ float humidity = 0.0;
 int main() {
     uint8_t recv_dat[6] = {0};
     char ch[30];
-    time nowTime;
 
     I2C_Init(MXC_I2C1, I2C_STD_MODE, NULL);
-
-    sys_cfg_rtc_t sys_cfg;
-    sys_cfg.tmr = MXC_TMR0;
-    RTC_Init(MXC_RTC, 0, 0, &sys_cfg);
-    RTC_EnableRTCE(MXC_RTC);
-
+    Clock_Init();
     My_UART0_Init();
-
+    OLED_Init();
+    OLED_Clear();
+    SHT30_Reset();
+    SHT30_Init();
+    Uart_Start_Receive();
 //    gpio_cfg_t gpio_in;
 //    gpio_in.port = MAX30102_INT_Port;
 //    gpio_in.mask = MAX30102_INT_Pin;
@@ -46,23 +49,19 @@ int main() {
 //    gpio_in.func = GPIO_FUNC_IN;
 //    GPIO_Config(&gpio_in);
 
-    OLED_Init();
-    OLED_Clear();
-    SHT30_Reset();
-    SHT30_Init();
-    Uart_Start_Receive();
+
 //    Max30102_Init();
 
-    OLED_ShowChinese(96, 0, 0);         //体
-    OLED_ShowChinese(112, 0, 1);        //温
-    OLED_ShowChinese(0, 0, 2);            //心
-    OLED_ShowChinese(16, 0, 3);           //率
+//    OLED_ShowChinese(96, 0, 0);         //体
+//    OLED_ShowChinese(112, 0, 1);        //温
+//    OLED_ShowChinese(0, 0, 2);            //心
+//    OLED_ShowChinese(16, 0, 3);           //率
 
     while (1) {
         SHT30_Read_Dat(recv_dat);
         SHT30_Dat_To_Float(recv_dat, &temperature, &humidity);
         sprintf(ch, "%.1f", temperature);
-        OLED_ShowString(96, 4, ch, 16);
+//        OLED_ShowString(96, 4, ch, 16);
 
 
 //        Max30102_Task();
@@ -76,9 +75,27 @@ int main() {
         LED_Off(0);
         mxc_delay(MXC_DELAY_MSEC(300));
 
-        nowTime = GetNowTime();
-        sprintf(ch, "%02d:%02d:%02d", nowTime.hour, nowTime.minute, nowTime.second);
-        OLED_ShowString(32, 4, ch, 12);
+        GetNowTime();
+        OLED_ShowBigNum(0, 3, nowTime.hour / 10);
+        OLED_ShowBigNum(16, 3, nowTime.hour % 10);
+        OLED_ShowBigNum(32, 3, 10);
+        OLED_ShowBigNum(48, 3, nowTime.minute / 10);
+        OLED_ShowBigNum(64, 3, nowTime.minute % 10);
+        OLED_ShowBigNum(80, 3, 10);
+        OLED_ShowBigNum(96, 3, nowTime.second / 10);
+        OLED_ShowBigNum(112, 3, nowTime.second % 10);
+        OLED_ShowChinese(32, 0, 4);
+        OLED_ShowChinese(64, 0, 5);
+        OLED_ShowChinese(96, 0, 6);
+        sprintf(ch, "%04d", nowTime.year);
+        OLED_ShowString(0, 0, ch, 16);
+        sprintf(ch, "%02d", nowTime.month);
+        OLED_ShowString(48, 0, ch, 16);
+        sprintf(ch, "%02d", nowTime.day);
+        OLED_ShowString(80, 0, ch, 16);
+        OLED_ShowString(112, 0, weekStr[nowTime.weekday], 16);
+//        sprintf(ch, "%02d:%02d:%02d", nowTime.hour, nowTime.minute, nowTime.second);
+//        OLED_ShowString(32, 4, ch, 12);
     }
 }
 

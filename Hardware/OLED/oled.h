@@ -94,4 +94,6 @@ void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t Char_Size);
  */
 void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t no);
 
+void OLED_ShowBigNum(uint8_t x, uint8_t y, uint8_t num);
+
 #endif

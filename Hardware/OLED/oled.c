@@ -126,3 +126,23 @@ void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t no) {
         adder += 1;
     }
 }
+
+void OLED_ShowBigNum(uint8_t x, uint8_t y, uint8_t num) {
+    uint8_t t;
+    OLED_Set_Pos(x, y);
+    for (t = 0; t < 16; t++) {
+        OLED_WR_DATA(bigNum[4 * num][t]);
+    }
+    OLED_Set_Pos(x, y + 1);
+    for (t = 0; t < 16; t++) {
+        OLED_WR_DATA(bigNum[4 * num + 1][t]);
+    }
+    OLED_Set_Pos(x, y + 2);
+    for (t = 0; t < 16; t++) {
+        OLED_WR_DATA(bigNum[4 * num + 2][t]);
+    }
+    OLED_Set_Pos(x, y + 3);
+    for (t = 0; t < 16; t++) {
+        OLED_WR_DATA(bigNum[4 * num + 3][t]);
+    }
+}
