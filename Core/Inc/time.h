@@ -23,4 +23,6 @@ void GetNowTime();
 
 void Clock_Init();
 
+void SolveTimeString(char *timeString);
+
 #endif //MAX32660_I2C_TIME_H

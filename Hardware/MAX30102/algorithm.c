@@ -1,27 +1,93 @@
-//
-// Created by kai on 2021/3/7.
-//
-
+/** \file algorithm.cpp ******************************************************
+*
+* Project: MAXREFDES117#
+* Filename: algorithm.cpp
+* Description: This module calculates the heart rate/SpO2 level
+*
+*
+* --------------------------------------------------------------------
+*
+* This code follows the following naming conventions:
+*
+* char              ch_pmod_value
+* char (array)      s_pmod_s_string[16]
+* float             f_pmod_value
+* int32_t           n_pmod_value
+* int32_t (array)   an_pmod_value[16]
+* int16_t           w_pmod_value
+* int16_t (array)   aw_pmod_value[16]
+* uint16_t          uw_pmod_value
+* uint16_t (array)  auw_pmod_value[16]
+* uint8_t           uch_pmod_value
+* uint8_t (array)   auch_pmod_buffer[16]
+* uint32_t          un_pmod_value
+* int32_t *         pn_pmod_value
+*
+* ------------------------------------------------------------------------- */
+/*******************************************************************************
+* Copyright (C) 2016 Maxim Integrated Products, Inc., All Rights Reserved.
+*
+* Permission is hereby granted, free of charge, to any person obtaining a
+* copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation
+* the rights to use, copy, modify, merge, publish, distribute, sublicense,
+* and/or sell copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included
+* in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL MAXIM INTEGRATED BE LIABLE FOR ANY CLAIM, DAMAGES
+* OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+* ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*
+* Except as contained in this notice, the name of Maxim Integrated
+* Products, Inc. shall not be used except as stated in the Maxim Integrated
+* Products, Inc. Branding Policy.
+*
+* The mere transfer of this software does not imply any licenses
+* of trade secrets, proprietary technology, copyrights, patents,
+* trademarks, maskwork rights, or any other form of intellectual
+* property whatsoever. Maxim Integrated Products, Inc. retains all
+* ownership rights.
+*******************************************************************************
+*  Modified original MAXIM source code on: 13.01.2019
+*		Author: Mateusz Salamon
+*		www.msalamon.pl
+*		mateusz@msalamon.pl
+*	Code is modified to work with STM32 HAL libraries.
+*
+*	Website: https://msalamon.pl/palec-mi-pulsuje-pulsometr-max30102-pod-kontrola-stm32/
+*	GitHub:  https://github.com/lamik/MAX30102_STM32_HAL
+*
+*/
+#include "main.h"
 #include "algorithm.h"
 
 const uint16_t auw_hamm[31] = {41, 276, 512, 276, 41}; //Hamm=  long16(512* hamming(5)');
 //uch_spo2_table is computed as  -45.060*ratioAverage* ratioAverage + 30.354 *ratioAverage + 94.845 ;
-const uint8_t uch_spo2_table[184] = {
-        95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 97, 98, 98, 98, 98, 98, 99, 99, 99, 99,
-        99, 99, 99, 99, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 99, 99, 99, 99, 99, 99, 99, 99, 98, 98, 98,
-        98, 98, 98, 97, 97, 97, 97, 96, 96, 96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93,
-        92, 92, 92, 91, 91, 90, 90, 89, 89, 89, 88, 88, 87, 87, 86, 86, 85, 85, 84, 84,
-        83, 82, 82, 81, 81, 80, 80, 79, 78, 78, 77, 76, 76, 75, 74, 74, 73, 72, 72, 71,
-        70, 69, 69, 68, 67, 66, 66, 65, 64, 63, 62, 62, 61, 60, 59, 58, 57, 56, 56, 55,
-        54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35,
-        34, 33, 31, 30, 29, 28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11,
-        10, 9, 7, 6, 5, 3, 2, 1
-};
+const uint8_t uch_spo2_table[184] = {95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 97, 98, 98, 98, 98, 98, 99, 99, 99, 99,
+                                     99, 99, 99, 99, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+                                     100, 100, 100,
+                                     100, 100, 100, 100, 99, 99, 99, 99, 99, 99, 99, 99, 98, 98, 98, 98, 98, 98, 97, 97,
+                                     97, 97, 96, 96, 96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93, 92, 92, 92, 91, 91,
+                                     90, 90, 89, 89, 89, 88, 88, 87, 87, 86, 86, 85, 85, 84, 84, 83, 82, 82, 81, 81,
+                                     80, 80, 79, 78, 78, 77, 76, 76, 75, 74, 74, 73, 72, 72, 71, 70, 69, 69, 68, 67,
+                                     66, 66, 65, 64, 63, 62, 62, 61, 60, 59, 58, 57, 56, 56, 55, 54, 53, 52, 51, 50,
+                                     49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 31, 30, 29,
+                                     28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10, 9, 7, 6, 5,
+                                     3, 2, 1};
 static int32_t an_dx[BUFFER_SIZE - MA4_SIZE]; // delta
 static int32_t an_x[BUFFER_SIZE]; //ir
 static int32_t an_y[BUFFER_SIZE]; //red
 
+void maxim_heart_rate_and_oxygen_saturation(volatile uint32_t *pun_ir_buffer, volatile uint32_t *pun_red_buffer,
+                                            int32_t n_buffer_length, uint16_t un_offset, int32_t *pn_spo2,
+                                            int8_t *pch_spo2_valid, int32_t *pn_heart_rate, int8_t *pch_hr_valid)
 /**
 * \brief        Calculate the heart rate and SpO2 level
 * \par          Details
@@ -30,7 +96,7 @@ static int32_t an_y[BUFFER_SIZE]; //red
 *               Thus, accurate SPO2 is precalculated and save longo uch_spo2_table[] per each ratio.
 *
 * \param[in]    *pun_ir_buffer           - IR sensor data buffer
-* \param[in]    n_ir_buffer_length      - IR sensor data buffer length
+* \param[in]    n_buffer_length      - IR sensor data buffer length
 * \param[in]    *pun_red_buffer          - Red sensor data buffer
 * \param[out]    *pn_spo2                - Calculated SpO2 value
 * \param[out]    *pch_spo2_valid         - 1 if the calculated SpO2 value is valid
@@ -39,12 +105,7 @@ static int32_t an_y[BUFFER_SIZE]; //red
 *
 * \retval       None
 */
-void maxim_heart_rate_and_oxygen_saturation(
-        const uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length,
-        const uint32_t *pun_red_buffer,
-        int32_t *pn_spo2, int8_t *pch_spo2_valid,
-        int32_t *pn_heart_rate, int8_t *pch_hr_valid
-) {
+{
     uint32_t un_ir_mean, un_only_once;
     int32_t k, n_i_ratio_count;
     int32_t i, s, m, n_exact_ir_valley_locs_count, n_middle_idx;
@@ -60,11 +121,20 @@ void maxim_heart_rate_and_oxygen_saturation(
     int32_t n_y_dc_max_idx, n_x_dc_max_idx;
     int32_t an_ratio[5], n_ratio_average;
     int32_t n_nume, n_denom;
-    // remove DC of ir signal
+    uint32_t un_offset_tmp = un_offset;
+    // remove DC of ir signal    
     un_ir_mean = 0;
-    for (k = 0; k < n_ir_buffer_length; k++) { un_ir_mean += pun_ir_buffer[k]; }
-    un_ir_mean = un_ir_mean / n_ir_buffer_length;
-    for (k = 0; k < n_ir_buffer_length; k++) { an_x[k] = pun_ir_buffer[k] - un_ir_mean; }
+    for (k = 0; k < n_buffer_length; k++) {
+        un_ir_mean += pun_ir_buffer[un_offset_tmp];
+        un_offset_tmp = (un_offset_tmp + 1) % MAX30102_BUFFER_LENGTH;
+    }
+
+    un_ir_mean = un_ir_mean / n_buffer_length;
+    un_offset_tmp = un_offset;
+    for (k = 0; k < n_buffer_length; k++) {
+        an_x[k] = pun_ir_buffer[un_offset_tmp] - un_ir_mean;
+        un_offset_tmp = (un_offset_tmp + 1) % MAX30102_BUFFER_LENGTH;
+    }
 
     // 4 pt Moving Average
     for (k = 0; k < BUFFER_SIZE - MA4_SIZE; k++) {
@@ -99,7 +169,7 @@ void maxim_heart_rate_and_oxygen_saturation(
         n_th1 += ((an_dx[k] > 0) ? an_dx[k] : ((int32_t) 0 - an_dx[k]));
     }
     n_th1 = n_th1 / (BUFFER_SIZE - HAMMING_SIZE);
-    // peak location is acutally index for sharpest location of raw signal since we flipped the signal
+    // peak location is acutally index for sharpest location of raw signal since we flipped the signal         
     maxim_find_peaks(an_dx_peak_locs, &n_npks, an_dx, BUFFER_SIZE - HAMMING_SIZE, n_th1, 8,
                      5);//peak_height, peak_distance, max_num_peaks
 
@@ -109,7 +179,7 @@ void maxim_heart_rate_and_oxygen_saturation(
             n_peak_interval_sum += (an_dx_peak_locs[k] - an_dx_peak_locs[k - 1]);
         }
         n_peak_interval_sum = n_peak_interval_sum / (n_npks - 1);
-        *pn_heart_rate = (int32_t) (6000 / n_peak_interval_sum);// beats per minutes
+        *pn_heart_rate = (int32_t) (6000 / (float) n_peak_interval_sum * (float) (FS / 100.0));// beats per minutes
         *pch_hr_valid = 1;
     } else {
         *pn_heart_rate = -999;
@@ -123,9 +193,11 @@ void maxim_heart_rate_and_oxygen_saturation(
 
     // raw value : RED(=y) and IR(=X)
     // we need to assess DC and AC value of ir and red PPG.
-    for (k = 0; k < n_ir_buffer_length; k++) {
-        an_x[k] = pun_ir_buffer[k];
-        an_y[k] = pun_red_buffer[k];
+    un_offset_tmp = un_offset;
+    for (k = 0; k < n_buffer_length; k++) {
+        an_x[k] = pun_ir_buffer[un_offset_tmp];
+        an_y[k] = pun_red_buffer[un_offset_tmp];
+        un_offset_tmp = (un_offset_tmp + 1) % MAX30102_BUFFER_LENGTH;
     }
 
     // find precise min near an_ir_valley_locs
@@ -172,8 +244,8 @@ void maxim_heart_rate_and_oxygen_saturation(
             return;
         }
     }
-    // find max between two valley locations
-    // and use ratio betwen AC compoent of Ir & Red and DC compoent of Ir & Red for SPO2
+    // find max between two valley locations 
+    // and use ratio betwen AC compoent of Ir & Red and DC compoent of Ir & Red for SPO2 
 
     for (k = 0; k < n_exact_ir_valley_locs_count - 1; k++) {
         n_y_dc_max = -16777216;
@@ -229,6 +301,9 @@ void maxim_heart_rate_and_oxygen_saturation(
     }
 }
 
+
+void maxim_find_peaks(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_size, int32_t n_min_height,
+                      int32_t n_min_distance, int32_t n_max_num)
 /**
 * \brief        Find peaks
 * \par          Details
@@ -236,15 +311,14 @@ void maxim_heart_rate_and_oxygen_saturation(
 *
 * \retval       None
 */
-void maxim_find_peaks(
-        int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_size, int32_t n_min_height,
-        int32_t n_min_distance, int32_t n_max_num
-) {
+{
     maxim_peaks_above_min_height(pn_locs, pn_npks, pn_x, n_size, n_min_height);
     maxim_remove_close_peaks(pn_locs, pn_npks, pn_x, n_min_distance);
     *pn_npks = min(*pn_npks, n_max_num);
 }
 
+void
+maxim_peaks_above_min_height(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_size, int32_t n_min_height)
 /**
 * \brief        Find peaks above n_min_height
 * \par          Details
@@ -252,9 +326,7 @@ void maxim_find_peaks(
 *
 * \retval       None
 */
-void maxim_peaks_above_min_height(
-        int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_size, int32_t n_min_height
-) {
+{
     int32_t i = 1, n_width;
     *pn_npks = 0;
 
@@ -275,6 +347,8 @@ void maxim_peaks_above_min_height(
     }
 }
 
+
+void maxim_remove_close_peaks(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_min_distance)
 /**
 * \brief        Remove peaks
 * \par          Details
@@ -282,7 +356,8 @@ void maxim_peaks_above_min_height(
 *
 * \retval       None
 */
-void maxim_remove_close_peaks(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x, int32_t n_min_distance) {
+{
+
     int32_t i, j, n_old_npks, n_dist;
 
     /* Order peaks from large to small */
@@ -302,6 +377,7 @@ void maxim_remove_close_peaks(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x,
     maxim_sort_ascend(pn_locs, *pn_npks);
 }
 
+void maxim_sort_ascend(int32_t *pn_x, int32_t n_size)
 /**
 * \brief        Sort array
 * \par          Details
@@ -309,7 +385,7 @@ void maxim_remove_close_peaks(int32_t *pn_locs, int32_t *pn_npks, int32_t *pn_x,
 *
 * \retval       None
 */
-void maxim_sort_ascend(int32_t *pn_x, int32_t n_size) {
+{
     int32_t i, j, n_temp;
     for (i = 1; i < n_size; i++) {
         n_temp = pn_x[i];
@@ -320,6 +396,7 @@ void maxim_sort_ascend(int32_t *pn_x, int32_t n_size) {
     }
 }
 
+void maxim_sort_indices_descend(int32_t *pn_x, int32_t *pn_indx, int32_t n_size)
 /**
 * \brief        Sort indices
 * \par          Details
@@ -327,7 +404,7 @@ void maxim_sort_ascend(int32_t *pn_x, int32_t n_size) {
 *
 * \retval       None
 */
-void maxim_sort_indices_descend(const int32_t *pn_x, int32_t *pn_indx, int32_t n_size) {
+{
     int32_t i, j, n_temp;
     for (i = 1; i < n_size; i++) {
         n_temp = pn_indx[i];

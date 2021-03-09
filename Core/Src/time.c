@@ -2,6 +2,7 @@
 // Created by kai on 2021/3/4.
 //
 
+#include <stdlib.h>
 #include "time.h"
 #include "rtc.h"
 #include "mxc_delay.h"
@@ -9,7 +10,7 @@
 time nowTime;
 
 static sys_cfg_rtc_t sys_cfg = {
-        .tmr = MXC_TMR0
+        .tmr = MXC_TMR1
 };
 
 uint8_t dayRedress_leap[12] = {
@@ -40,6 +41,7 @@ void GetNowTime() {
     if (day >= 1) {
         nowTime.day = nowTime.day + 1;
         RTC_Init(MXC_RTC, sec - 24 * 60 * 60, 0, &sys_cfg);
+        RTC_EnableRTCE(MXC_RTC);
     }
     if ((nowTime.year % 400 == 0) || ((nowTime.year % 100 != 0) && (nowTime.year % 4 == 0))) {
         nowTime.leap = true;
@@ -104,4 +106,19 @@ void Clock_Init() {
     nowTime.minute = 0;
     nowTime.second = 0;
     nowTime.leap = false;
+}
+
+void SolveTimeString(char *timeString) {
+    // 上位机发送数据为YYYY-MM-DD-HH-MM-SS
+    nowTime.year = atoi(timeString);
+    nowTime.month = atoi(timeString + 5);
+    nowTime.day = atoi(timeString + 8);
+    nowTime.hour = atoi(timeString + 11);
+    nowTime.minute = atoi(timeString + 14);
+    nowTime.second = atoi(timeString + 17);
+    RTC_DisableRTCE(MXC_RTC);
+    RTC_Init(MXC_RTC, nowTime.hour * 60 * 60 + nowTime.minute * 60 + nowTime.second, 0, &sys_cfg);
+    RTC_EnableRTCE(MXC_RTC);
+    // 更新星期数和闰年
+    GetNowTime();
 }

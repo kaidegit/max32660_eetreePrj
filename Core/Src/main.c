@@ -10,22 +10,17 @@
 #include "uart.h"
 #include "notifications.h"
 //#include "MAX30102.h"
+#include "screen.h"
+#include "uartReceiver.h"
 
 //#define MAX30102_INT_Port                PORT_0
 //#define MAX30102_INT_Pin                 PIN_4
 
-void UART0_IRQHandler(void) {
-    printf("uartirq\n");
-    UART_Handler(MXC_UART0);
-}
+enum ActName nowAct;
 
 float temperature = 0.0;
 float humidity = 0.0;
 extern time nowTime;
-
-char weekStr[7][3] = {
-        "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
-};
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
@@ -42,6 +37,7 @@ int main() {
     SHT30_Reset();
     SHT30_Init();
     Uart_Start_Receive();
+    nowAct = Time;
 //    gpio_cfg_t gpio_in;
 //    gpio_in.port = MAX30102_INT_Port;
 //    gpio_in.mask = MAX30102_INT_Pin;
@@ -58,9 +54,11 @@ int main() {
 //    OLED_ShowChinese(16, 0, 3);           //率
 
     while (1) {
-        SHT30_Read_Dat(recv_dat);
-        SHT30_Dat_To_Float(recv_dat, &temperature, &humidity);
-        sprintf(ch, "%.1f", temperature);
+        Oled_Task(5);
+        mxc_delay(MXC_DELAY_MSEC(5));
+//        SHT30_Read_Dat(recv_dat);
+//        SHT30_Dat_To_Float(recv_dat, &temperature, &humidity);
+//        sprintf(ch, "%.1f", temperature);
 //        OLED_ShowString(96, 4, ch, 16);
 
 
@@ -70,30 +68,13 @@ int main() {
 //        }
 //        printf("HR: %d\n\rSpO2: %d\n\r", Max30102_GetHeartRate(), Max30102_GetSpO2Value());
 
-        LED_On(0);
-        mxc_delay(MXC_DELAY_MSEC(300));
-        LED_Off(0);
-        mxc_delay(MXC_DELAY_MSEC(300));
+//        LED_On(0);
+//        mxc_delay(MXC_DELAY_MSEC(300));
+//        LED_Off(0);
+//        mxc_delay(MXC_DELAY_MSEC(300));
 
-        GetNowTime();
-        OLED_ShowBigNum(0, 3, nowTime.hour / 10);
-        OLED_ShowBigNum(16, 3, nowTime.hour % 10);
-        OLED_ShowBigNum(32, 3, 10);
-        OLED_ShowBigNum(48, 3, nowTime.minute / 10);
-        OLED_ShowBigNum(64, 3, nowTime.minute % 10);
-        OLED_ShowBigNum(80, 3, 10);
-        OLED_ShowBigNum(96, 3, nowTime.second / 10);
-        OLED_ShowBigNum(112, 3, nowTime.second % 10);
-        OLED_ShowChinese(32, 0, 4);
-        OLED_ShowChinese(64, 0, 5);
-        OLED_ShowChinese(96, 0, 6);
-        sprintf(ch, "%04d", nowTime.year);
-        OLED_ShowString(0, 0, ch, 16);
-        sprintf(ch, "%02d", nowTime.month);
-        OLED_ShowString(48, 0, ch, 16);
-        sprintf(ch, "%02d", nowTime.day);
-        OLED_ShowString(80, 0, ch, 16);
-        OLED_ShowString(112, 0, weekStr[nowTime.weekday], 16);
+//        Oled_ShowTime();
+
 //        sprintf(ch, "%02d:%02d:%02d", nowTime.hour, nowTime.minute, nowTime.second);
 //        OLED_ShowString(32, 4, ch, 12);
     }

@@ -5,11 +5,13 @@
 #ifndef MAX32660_I2C_SCREEN_H
 #define MAX32660_I2C_SCREEN_H
 
+#include "stdint.h"
+
 enum ActName {
     Time = 1, Temperature, Notification
 };
 
-void Oled_Task(enum ActName Act);
+void Oled_Task(uint8_t tickTime);
 
 void Oled_ShowTime();
 
