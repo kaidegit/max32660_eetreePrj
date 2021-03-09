@@ -10,8 +10,8 @@
 
 extern time nowTime;
 extern float temperature;
-extern char *notificationTitle;
-extern char *notificationMessage;
+extern char notificationTitle[30];
+extern char notificationMessage[255];
 extern enum ActName nowAct;
 uint16_t displayTempOrNotiTime;
 
@@ -19,19 +19,31 @@ uint16_t displayTempOrNotiTime;
 void Oled_Task(uint8_t tickTime) {
     switch (nowAct) {
         case Temperature:
+            // 仅首次执行
+            if (displayTempOrNotiTime == 0){
+                OLED_Clear();
+            }
+            // 10s内刷新
             if (displayTempOrNotiTime < 10000 / tickTime) {
                 Oled_ShowTemperature();
                 displayTempOrNotiTime++;
             } else {
                 nowAct = Time;
+                OLED_Clear();
             }
             break;
         case Notification:
-            if (displayTempOrNotiTime < 10000 / tickTime) {
+            // 仅首次执行
+            if (displayTempOrNotiTime == 0) {
+                OLED_Clear();
                 Oled_ShowNotification();
+            }
+            // 5s内持续执行
+            if (displayTempOrNotiTime < 5000 / tickTime) {
                 displayTempOrNotiTime++;
             } else {
                 nowAct = Time;
+                OLED_Clear();
             }
             break;
         default:
@@ -74,5 +86,6 @@ void Oled_ShowTemperature() {
 }
 
 void Oled_ShowNotification() {
-
+    OLED_ShowString(0,0,notificationTitle,16);
+    OLED_ShowString(0,2,notificationMessage,16);
 }

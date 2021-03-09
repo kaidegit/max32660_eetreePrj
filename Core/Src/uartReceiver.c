@@ -15,8 +15,8 @@ char revBuf[255] = {0};
 char title[30];
 char message[255];
 
-extern char *notificationTitle;
-extern char *notificationMessage;
+extern char notificationTitle[30];
+extern char notificationMessage[255];
 
 extern enum ActName nowAct;
 
@@ -52,23 +52,21 @@ void My_UART0_Init() {
 void read_cb(uart_req_t *req, int error) {
     static uint8_t position = 0;
     static bool recording = false;
-    int i = 0, j = 0;
+    uint8_t i = 0, j = 0, len = 0;
     if (uartRcv == '\"') {   //从"开始记录，到"结束记录
         if (!recording) {    //如果还未开始记录，开始记录
             recording = true;
         } else {             //如果已经开始记录，结束记录并显示
-            position = 0;
-            printf("%s", revBuf);
             memset(title, 0, sizeof(title));
             memset(message, 0, sizeof(message));
             // 分离标题和内容。上位机中用:分割
-            for (i = 0; (i < strlen(revBuf)) && (revBuf[i] != ':'); i++) {
+            len = strlen(revBuf);
+            for (i = 0; (i < len) && (revBuf[i] != ':'); i++) {
                 title[i] = revBuf[i];
             }
-            for (i++, j = 0; i < strlen(revBuf); i++, j++) {
+            for (i++, j = 0; i < len; i++, j++) {
                 message[j] = revBuf[i];
             }
-            printf("\"%s\":\"%s\"", title, message);
             // 检查是否为设置时间的通知
             if (strcmp(title, "time") == 0) {
                 SolveTimeString(message);
@@ -80,6 +78,7 @@ void read_cb(uart_req_t *req, int error) {
             // 重置到未读取过字符串状态
             memset(revBuf, 0, sizeof(revBuf));
             recording = false;
+            position = 0;
         }
     } else if (recording) {  //如果正在记录，就记录
         revBuf[position] = uartRcv;
