@@ -9,7 +9,6 @@
 #include "stdio.h"
 
 extern time nowTime;
-extern float temperature;
 extern char notificationTitle[30];
 extern char notificationMessage[255];
 extern enum ActName nowAct;
@@ -22,6 +21,7 @@ void Oled_Task(uint8_t tickTime) {
             // 仅首次执行
             if (displayTempOrNotiTime == 0){
                 OLED_Clear();
+                Oled_ShowTemperatureBackground();
             }
             // 10s内刷新
             if (displayTempOrNotiTime < 10000 / tickTime) {
@@ -85,6 +85,10 @@ void Oled_ShowTemperature() {
     OLED_ShowChinese(112, 0, 1);        //温
 }
 
+void Oled_ShowTemperatureBackground() {
+    OLED_ShowChinese(96, 0, 0);         //体
+    OLED_ShowChinese(112, 0, 1);        //温
+}
 void Oled_ShowNotification() {
     OLED_ShowString(0,0,notificationTitle,16);
     OLED_ShowString(0,2,notificationMessage,16);

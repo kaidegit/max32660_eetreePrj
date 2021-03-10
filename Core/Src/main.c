@@ -17,18 +17,12 @@
 //#define MAX30102_INT_Pin                 PIN_4
 
 enum ActName nowAct;
-
-float temperature = 0.0;
-float humidity = 0.0;
 extern time nowTime;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
 int main() {
-    uint8_t recv_dat[6] = {0};
-    char ch[30];
-
     I2C_Init(MXC_I2C1, I2C_STD_MODE, NULL);
     Clock_Init();
     My_UART0_Init();

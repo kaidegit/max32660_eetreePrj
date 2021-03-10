@@ -17,6 +17,8 @@ void Oled_ShowTime();
 
 void Oled_ShowTemperature();
 
+void Oled_ShowTemperatureBackground();
+
 void Oled_ShowNotification();
 
 #endif //MAX32660_I2C_SCREEN_H
