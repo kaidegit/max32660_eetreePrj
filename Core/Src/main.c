@@ -14,6 +14,7 @@
 #include "uartReceiver.h"
 #include "pb.h"
 #include "temperature.h"
+#include "motor.h"
 
 //#define MAX30102_INT_Port                PORT_0
 //#define MAX30102_INT_Pin                 PIN_4
@@ -29,6 +30,7 @@ int main() {
     Clock_Init();
     PB_Init();
     My_UART0_Init();
+    Motor_Init();
     OLED_Init();
     OLED_Clear();
     SHT30_Reset();

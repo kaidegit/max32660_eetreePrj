@@ -5,7 +5,7 @@
 #ifndef MAX32660_I2C_TEMPERATURE_H
 #define MAX32660_I2C_TEMPERATURE_H
 
-float GetTemperature();
+void GetTemperature();
 
 void ShowTemperature();
 

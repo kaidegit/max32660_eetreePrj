@@ -8,6 +8,7 @@
 #include "string.h"
 #include "stdio.h"
 #include "temperature.h"
+#include "motor.h"
 
 extern time nowTime;
 extern char notificationTitle[30];
@@ -38,6 +39,7 @@ void Oled_Task(uint8_t tickTime) {
             if (displayTempOrNotiTime == 0) {                       // 仅首次执行
                 OLED_Clear();
                 Oled_ShowNotification();
+                Motor_Click();
                 displayTempOrNotiTime++;
             } else if (displayTempOrNotiTime < 5000 / tickTime) {   // 5s内持续执行
                 displayTempOrNotiTime++;
@@ -54,7 +56,7 @@ void Oled_Task(uint8_t tickTime) {
 }
 
 void Oled_ShowTime() {
-    char weekStr[7][3] = {
+    const char weekStr[7][3] = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
     };
 
