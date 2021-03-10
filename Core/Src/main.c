@@ -12,6 +12,8 @@
 //#include "MAX30102.h"
 #include "screen.h"
 #include "uartReceiver.h"
+#include "pb.h"
+#include "temperature.h"
 
 //#define MAX30102_INT_Port                PORT_0
 //#define MAX30102_INT_Pin                 PIN_4
@@ -25,6 +27,7 @@ extern time nowTime;
 int main() {
     I2C_Init(MXC_I2C1, I2C_STD_MODE, NULL);
     Clock_Init();
+    PB_Init();
     My_UART0_Init();
     OLED_Init();
     OLED_Clear();
@@ -50,6 +53,9 @@ int main() {
     while (1) {
         Oled_Task(5);
         mxc_delay(MXC_DELAY_MSEC(5));
+        if (PB_Get(0)){
+            ShowTemperature();
+        }
 //        SHT30_Read_Dat(recv_dat);
 //        SHT30_Dat_To_Float(recv_dat, &temperature, &humidity);
 //        sprintf(ch, "%.1f", temperature);

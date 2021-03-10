@@ -7,4 +7,6 @@
 
 float GetTemperature();
 
+void ShowTemperature();
+
 #endif //MAX32660_I2C_TEMPERATURE_H

@@ -7,10 +7,12 @@
 #include "time.h"
 #include "string.h"
 #include "stdio.h"
+#include "temperature.h"
 
 extern time nowTime;
 extern char notificationTitle[30];
 extern char notificationMessage[255];
+extern float temperature;
 extern enum ActName nowAct;
 uint16_t displayTempOrNotiTime;
 
@@ -18,30 +20,28 @@ uint16_t displayTempOrNotiTime;
 void Oled_Task(uint8_t tickTime) {
     switch (nowAct) {
         case Temperature:
-            // 仅首次执行
-            if (displayTempOrNotiTime == 0){
+            if (displayTempOrNotiTime == 0) {                       // 仅首次执行
                 OLED_Clear();
                 Oled_ShowTemperatureBackground();
-            }
-            // 10s内刷新
-            if (displayTempOrNotiTime < 10000 / tickTime) {
-                Oled_ShowTemperature();
                 displayTempOrNotiTime++;
-            } else {
+            } else if (displayTempOrNotiTime < 5000 / tickTime) {  // 5s内刷新
+                Oled_ShowTemperature();
+                GetTemperature();
+                displayTempOrNotiTime++;
+            } else {                                                // 结束后执行
                 nowAct = Time;
                 OLED_Clear();
+                Oled_ShowTemperature();
             }
             break;
         case Notification:
-            // 仅首次执行
-            if (displayTempOrNotiTime == 0) {
+            if (displayTempOrNotiTime == 0) {                       // 仅首次执行
                 OLED_Clear();
                 Oled_ShowNotification();
-            }
-            // 5s内持续执行
-            if (displayTempOrNotiTime < 5000 / tickTime) {
                 displayTempOrNotiTime++;
-            } else {
+            } else if (displayTempOrNotiTime < 5000 / tickTime) {   // 5s内持续执行
+                displayTempOrNotiTime++;
+            } else {                                                // 结束后执行
                 nowAct = Time;
                 OLED_Clear();
             }
@@ -81,15 +81,21 @@ void Oled_ShowTime() {
 }
 
 void Oled_ShowTemperature() {
-    OLED_ShowChinese(96, 0, 0);         //体
-    OLED_ShowChinese(112, 0, 1);        //温
+    char ch[30];
+    static float temptemp = 0;
+    if (temptemp != temperature){
+        sprintf(ch, "%.1f", temperature);
+        OLED_ShowString(96, 4, ch, 16);
+        temptemp = temperature;
+    }
 }
 
 void Oled_ShowTemperatureBackground() {
     OLED_ShowChinese(96, 0, 0);         //体
     OLED_ShowChinese(112, 0, 1);        //温
 }
+
 void Oled_ShowNotification() {
-    OLED_ShowString(0,0,notificationTitle,16);
-    OLED_ShowString(0,2,notificationMessage,16);
+    OLED_ShowString(0, 0, notificationTitle, 16);
+    OLED_ShowString(0, 2, notificationMessage, 16);
 }
