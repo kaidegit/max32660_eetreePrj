@@ -1,7 +1,3 @@
-//
-// Created by kai on 2021/3/10.
-//
-
 #include "motor.h"
 #include "gpio.h"
 #include "mxc_delay.h"

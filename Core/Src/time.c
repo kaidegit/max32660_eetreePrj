@@ -1,7 +1,3 @@
-//
-// Created by kai on 2021/3/4.
-//
-
 #include <stdlib.h>
 #include "time.h"
 #include "rtc.h"
@@ -86,7 +82,7 @@ void GetNowTime() {
         default:
             break;
     }
-    /// （年+年/4+年/400-年/100+月日天数-1）/7＝XX……余星期几
+    // 万年历算法：（年+年/4+年/400-年/100+月日天数-1）/7＝XX……余星期几
     nowTime.weekday = (nowTime.year + nowTime.year / 4 + nowTime.year / 400 - nowTime.year / 100
                        + (nowTime.leap ? dayRedress_leap[nowTime.month - 1] :
                           dayRedress_common[nowTime.month - 1]) + nowTime.day - 1) % 7;
@@ -96,7 +92,7 @@ void GetNowTime() {
 }
 
 void Clock_Init() {
-    mxc_delay(MXC_DELAY_MSEC(300)); ///To avoid rtc starting failed
+    mxc_delay(MXC_DELAY_MSEC(300)); // To avoid rtc starting failed
     RTC_Init(MXC_RTC, 0, 0, &sys_cfg);
     RTC_EnableRTCE(MXC_RTC);
     nowTime.year = 2021;

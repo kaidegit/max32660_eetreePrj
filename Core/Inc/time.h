@@ -1,7 +1,3 @@
-//
-// Created by kai on 2021/3/4.
-//
-
 #ifndef MAX32660_I2C_TIME_H
 #define MAX32660_I2C_TIME_H
 
@@ -19,10 +15,20 @@ typedef struct {
     bool leap;
 }time;
 
+/**
+ * @brief get the time from RTC clock
+ */
 void GetNowTime();
 
+/**
+ * @brief init the RTC clock and set a time
+ */
 void Clock_Init();
 
+/**
+ * @brief solve the time string from uart
+ * @param timeString
+ */
 void SolveTimeString(char *timeString);
 
 #endif //MAX32660_I2C_TIME_H

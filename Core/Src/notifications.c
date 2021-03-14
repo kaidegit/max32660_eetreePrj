@@ -1,7 +1,3 @@
-//
-// Created by kai on 2021/3/7.
-//
-
 #include <stdbool.h>
 #include "notifications.h"
 #include "uart.h"
