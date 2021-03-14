@@ -83,18 +83,28 @@ void Oled_ShowTime() {
 }
 
 void Oled_ShowTemperature() {
-    char ch[30];
     static float temptemp = 0;
-    if (temptemp != temperature){
-        sprintf(ch, "%.1f", temperature);
-        OLED_ShowString(96, 4, ch, 16);
+    if (temptemp != temperature) {
+        OLED_ShowBigNum(0, 3, (int) (temperature / 10));
+        OLED_ShowBigNum(16, 3, (int) temperature % 10);
+        OLED_ShowBigNum(32, 3, 11);
+        OLED_ShowBigNum(48, 3, (int) ((temperature - (int) temperature) * 10));
+        OLED_ShowBigNum(64,3,12);
+        OLED_ShowBigNum(80,3,13);
+        if (temperature >= 37.5) {
+            OLED_ShowChinese(104,3,9);
+            OLED_ShowChinese(104, 5, 10);
+        }else{
+            OLED_ShowChinese(104,3,7);
+            OLED_ShowChinese(104,5,8);
+        }
         temptemp = temperature;
     }
 }
 
 void Oled_ShowTemperatureBackground() {
-    OLED_ShowChinese(96, 0, 0);         //体
-    OLED_ShowChinese(112, 0, 1);        //温
+    OLED_ShowChinese(0, 0, 0);         //体
+    OLED_ShowChinese(16, 0, 1);        //温
 }
 
 void Oled_ShowNotification() {
