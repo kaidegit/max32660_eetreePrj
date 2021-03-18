@@ -46,6 +46,10 @@
 #include "i2c_regs.h"
 #include "mxc_sys.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @defgroup i2c I2C
  * @ingroup periphlibs
@@ -56,10 +60,10 @@
 
 /// @brief I2C Speed Modes
 typedef enum {
-    I2C_STD_MODE        = 100000,       //!< 100KHz Bus Speed 
-    I2C_FAST_MODE       = 400000,       //!< 400KHz Bus Speed 
-    I2C_FASTPLUS_MODE   = 1000000,      //!< 1MHz   Bus Speed
-    I2C_HS_MODE         = 3400000       //!< 3.4MHz Bus Speed 
+    I2C_STD_MODE = 100000,       //!< 100KHz Bus Speed
+    I2C_FAST_MODE = 400000,       //!< 400KHz Bus Speed
+    I2C_FASTPLUS_MODE = 1000000,      //!< 1MHz   Bus Speed
+    I2C_HS_MODE = 3400000       //!< 3.4MHz Bus Speed
 } i2c_speed_t;
 
 //State for Master
@@ -70,12 +74,13 @@ typedef enum {
 
 // @brief Enable/Disable TXFIFO Autoflush mode
 typedef enum {
-    I2C_AUTOFLUSH_ENABLE   = 0,
-    I2C_AUTOFLUSH_DISABLE  = 1 
+    I2C_AUTOFLUSH_ENABLE = 0,
+    I2C_AUTOFLUSH_DISABLE = 1
 } i2c_autoflush_disable_t;
 
 // @brief I2C Transaction request.
 typedef struct i2c_req i2c_req_t;
+
 struct i2c_req {
 
     uint8_t addr;                  /**< @parblock I2C 7-bit Address left aligned, bit 7 to bit 1.
@@ -101,7 +106,7 @@ struct i2c_req {
                                      *    @arg Non-zero to send a restart at end of the transaction
                                      *    @note Only used for Master transactions.
                                      *    @endparblock
-                                     */ 
+                                     */
     i2c_autoflush_disable_t sw_autoflush_disable;       ///< Enable/Disable autoflush.
 
     /**
@@ -109,7 +114,7 @@ struct i2c_req {
      * @param   i2c_req_t*  Pointer to the transaction request.
      * @param   int         Error code.
      */
-    void (*callback)(i2c_req_t*, int);
+    void (*callback)(i2c_req_t *, int);
 };
 
 /***** Function Prototypes *****/
@@ -122,7 +127,7 @@ struct i2c_req {
  * @returns \c #E_NO_ERROR if everything is successful, 
  *             @ref MXC_Error_Codes if an error occurred.
  */
-int I2C_Init(mxc_i2c_regs_t * i2c, i2c_speed_t i2cspeed, const sys_cfg_i2c_t* sys_cfg);
+int I2C_Init(mxc_i2c_regs_t *i2c, i2c_speed_t i2cspeed, const sys_cfg_i2c_t *sys_cfg);
 
 /**
  * @brief   Shutdown I2C module.
@@ -147,7 +152,7 @@ int I2C_Shutdown(mxc_i2c_regs_t *i2c);
  * @returns Bytes transacted if everything is successful, 
  *              @ref MXC_Error_Codes if an error occurred.
  */
-int I2C_MasterWrite(mxc_i2c_regs_t *i2c, uint8_t addr, const uint8_t* data, int len, int restart);
+int I2C_MasterWrite(mxc_i2c_regs_t *i2c, uint8_t addr, const uint8_t *data, int len, int restart);
 
 /**
  * @brief   Master read data. Will block until transaction is complete.
@@ -163,7 +168,7 @@ int I2C_MasterWrite(mxc_i2c_regs_t *i2c, uint8_t addr, const uint8_t* data, int 
                         otherwise send a restart.
  * @returns Bytes transacted if everything is successful, @ref MXC_Error_Codes if an error occurred.
  */
-int I2C_MasterRead(mxc_i2c_regs_t *i2c, uint8_t addr, uint8_t* data, int len, int restart);
+int I2C_MasterRead(mxc_i2c_regs_t *i2c, uint8_t addr, uint8_t *data, int len, int restart);
 
 /**
  * @brief   Slave read data. Will block until transaction is complete.
@@ -182,9 +187,9 @@ int I2C_MasterRead(mxc_i2c_regs_t *i2c, uint8_t addr, uint8_t* data, int len, in
  * @param   sw_autoflush_disable      TX Autoflush enabled by default.Set this bit to disable autoflush manually.
  * @returns #E_NO_ERROR if everything is successful, @ref MXC_Error_Codes if an error occurred.
  */
-int I2C_Slave(mxc_i2c_regs_t *i2c, uint8_t addr, const uint8_t* read_data, 
-              int read_len, uint8_t* write_data, int write_len, int* tx_num, 
-              int* rx_num, i2c_autoflush_disable_t sw_autoflush_disable);
+int I2C_Slave(mxc_i2c_regs_t *i2c, uint8_t addr, const uint8_t *read_data,
+              int read_len, uint8_t *write_data, int write_len, int *tx_num,
+              int *rx_num, i2c_autoflush_disable_t sw_autoflush_disable);
 
 /**
  * @brief   Master Read and Write Asynchronous.
@@ -201,6 +206,7 @@ int I2C_MasterAsync(mxc_i2c_regs_t *i2c, i2c_req_t *req);
  * @returns #E_NO_ERROR if everything is successful, @ref MXC_Error_Codes if an error occurred.
  */
 int I2C_SlaveAsync(mxc_i2c_regs_t *i2c, i2c_req_t *req);
+
 /**
  * @brief   I2C interrupt handler.
  * @details This function should be called by the application from the interrupt
@@ -245,6 +251,10 @@ int I2C_SetTimeout(mxc_i2c_regs_t *i2c, int us);
  * @param      i2c   pointer to I2C regs
  */
 void I2C_ClearTimeout(mxc_i2c_regs_t *i2c);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**@} end of group i2c */
 #endif /* _I2C_H_ */

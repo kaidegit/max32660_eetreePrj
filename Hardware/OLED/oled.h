@@ -4,6 +4,10 @@
 #include "stdint.h"
 #include "i2c.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// the i2c address of the oled
 #define OLED_ADDR 0x78
 
@@ -81,7 +85,7 @@ void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size);
  * @param chr the pointer of the char array
  * @param Char_Size the size of the character. Should be 16 or 12.
  */
-void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t Char_Size);
+void OLED_ShowString(uint8_t x, uint8_t y, const char *chr, uint8_t Char_Size);
 
 /**
  * @brief display a Chinese character at the place on the OLED.
@@ -95,5 +99,9 @@ void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t Char_Size);
 void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t no);
 
 void OLED_ShowBigNum(uint8_t x, uint8_t y, uint8_t num);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -41,7 +41,7 @@ file(GLOB_RECURSE SOURCES "Startup/*.*" "Drivers/*.*" "Core/*.*" "Hardware/*.*")
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/max32660.ld)
 
-add_link_options(-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16)
+add_link_options(-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs)
 add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map)
 add_link_options(-T ${LINKER_SCRIPT})
 

@@ -4,7 +4,7 @@
 
 #include "screen.h"
 #include "oled.h"
-#include "time.h"
+#include "clock.h"
 #include "string.h"
 #include "stdio.h"
 #include "temperature.h"
@@ -18,7 +18,7 @@ extern enum ActName nowAct;
 uint16_t displayTempOrNotiTime;
 
 
-void Oled_Task(uint8_t tickTime) {
+void Oled_Task(uint8_t tickTime,clock time) {
     switch (nowAct) {
         case Temperature:
             if (displayTempOrNotiTime == 0) {                       // 仅首次执行
@@ -50,36 +50,37 @@ void Oled_Task(uint8_t tickTime) {
             break;
         default:
             displayTempOrNotiTime = 0;
-            Oled_ShowTime();
+            Oled_ShowTime(time);
             break;
     }
 }
 
-void Oled_ShowTime() {
+void Oled_ShowTime(clock time) {
     const char weekStr[7][3] = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
     };
 
     char ch[30];
-    GetNowTime();
-    OLED_ShowBigNum(0, 3, nowTime.hour / 10);
-    OLED_ShowBigNum(16, 3, nowTime.hour % 10);
+//    GetNowTime();
+    time.GetNowTime();
+    OLED_ShowBigNum(0, 3, time.hour / 10);
+    OLED_ShowBigNum(16, 3, time.hour % 10);
     OLED_ShowBigNum(32, 3, 10);
-    OLED_ShowBigNum(48, 3, nowTime.minute / 10);
-    OLED_ShowBigNum(64, 3, nowTime.minute % 10);
+    OLED_ShowBigNum(48, 3, time.minute / 10);
+    OLED_ShowBigNum(64, 3, time.minute % 10);
     OLED_ShowBigNum(80, 3, 10);
-    OLED_ShowBigNum(96, 3, nowTime.second / 10);
-    OLED_ShowBigNum(112, 3, nowTime.second % 10);
+    OLED_ShowBigNum(96, 3, time.second / 10);
+    OLED_ShowBigNum(112, 3, time.second % 10);
     OLED_ShowChinese(32, 0, 4);
     OLED_ShowChinese(64, 0, 5);
     OLED_ShowChinese(96, 0, 6);
-    sprintf(ch, "%04d", nowTime.year);
+    sprintf(ch, "%04d", time.year);
     OLED_ShowString(0, 0, ch, 16);
-    sprintf(ch, "%02d", nowTime.month);
+    sprintf(ch, "%02d", time.month);
     OLED_ShowString(48, 0, ch, 16);
-    sprintf(ch, "%02d", nowTime.day);
+    sprintf(ch, "%02d", time.day);
     OLED_ShowString(80, 0, ch, 16);
-    OLED_ShowString(112, 0, weekStr[nowTime.weekday], 16);
+    OLED_ShowString(112, 0, weekStr[time.weekday], 16);
 }
 
 void Oled_ShowTemperature() {

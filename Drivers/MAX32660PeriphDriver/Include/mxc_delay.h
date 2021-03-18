@@ -43,12 +43,16 @@
 #ifndef _DELAY_H_
 #define _DELAY_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @defgroup    MXC_delay Delay Utility Functions 
  * @ingroup     devicelibs 
  * @brief       Asynchronous delay routines based on the SysTick Timer
  * @{
- */ 
+ */
 
 /***** Definitions *****/
 /**
@@ -57,7 +61,7 @@
  * x = SEC(3) // 3 seconds -> x = 3,000,000 
  * \endcode
  */
-#define MXC_DELAY_SEC(s)            (((unsigned long)s) * 1000000UL)  
+#define MXC_DELAY_SEC(s)            (((unsigned long)s) * 1000000UL)
 /**
  * Macro used to specify a microsecond timing parameter in milliseconds.
  * \code
@@ -118,6 +122,10 @@ void mxc_delay_stop(void);
  *             rate greater than the SysTick overflow rate.
  */
 void mxc_delay_handler(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**@} end of group MXC_delay */
 

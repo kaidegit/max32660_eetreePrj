@@ -8,7 +8,7 @@
 #include "uartReceiver.h"
 #include "uart.h"
 #include "screen.h"
-#include "time.h"
+#include "clock.h"
 
 uint8_t uartRcv = 0;
 char revBuf[255] = {0};
@@ -69,7 +69,7 @@ void read_cb(uart_req_t *req, int error) {
             }
             // 检查是否为设置时间的通知
             if (strcmp(title, "time") == 0) {
-                SolveTimeString(message);
+//                SolveTimeString(message);
             } else {
                 strcpy(notificationTitle, title);
                 strcpy(notificationMessage, message);

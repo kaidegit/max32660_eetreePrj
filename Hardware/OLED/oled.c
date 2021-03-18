@@ -100,7 +100,7 @@ void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size) {
     }
 }
 
-void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t Char_Size) {
+void OLED_ShowString(uint8_t x, uint8_t y, const char *chr, uint8_t Char_Size) {
     unsigned char j = 0;
     while (chr[j] != '\0') {
         OLED_ShowChar(x, y, chr[j], Char_Size);

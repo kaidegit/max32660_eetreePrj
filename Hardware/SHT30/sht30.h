@@ -3,6 +3,10 @@
 
 #include "main.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SHT30_ADDR 0x44
 #define SHT30_ADDR_WRITE (SHT30_ADDR << 1)
 #define SHT30_ADDR_READ  ((SHT30_ADDR << 1) + 1)
@@ -59,5 +63,9 @@ uint8_t SHT30_Read_Dat(uint8_t *dat);
 uint8_t CheckCrc8(uint8_t *const message, uint8_t initial_value);
 
 uint8_t SHT30_Dat_To_Float(uint8_t *const dat, float *temperature, float *humidity);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -6,6 +6,7 @@
 #define MAX32660_I2C_SCREEN_H
 
 #include "stdint.h"
+#include "clock.h"
 
 enum ActName {
     Time = 1, Temperature, Notification
@@ -17,12 +18,12 @@ enum ActName {
  *      and turn back to Time act
  * @param tickTime
  */
-void Oled_Task(uint8_t tickTime);
+void Oled_Task(uint8_t tickTime, clock time);
 
 /**
  * @brief show the time to the screen
  */
-void Oled_ShowTime();
+void Oled_ShowTime(clock time);
 
 /**
  * @brief show the temperature to the screen

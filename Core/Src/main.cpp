@@ -6,7 +6,7 @@
 #include "string.h"
 #include "sht30.h"
 #include "rtc.h"
-#include "time.h"
+#include "clock.h"
 #include "uart.h"
 #include "notifications.h"
 #include "screen.h"
@@ -25,7 +25,8 @@ extern time nowTime;
 int main() {
 
     I2C_Init(MXC_I2C1, I2C_STD_MODE, NULL);
-    Clock_Init();
+//    Clock_Init();
+    clock time;
     PB_Init();
     My_UART0_Init();
     Motor_Init();
@@ -40,7 +41,7 @@ int main() {
         if (PB_Get(0)) {
             ShowTemperature();
         }
-        Oled_Task(5);
+        Oled_Task(5, time);
         mxc_delay(MXC_DELAY_MSEC(5));
     }
 }

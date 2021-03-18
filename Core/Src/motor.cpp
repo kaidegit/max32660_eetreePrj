@@ -5,8 +5,8 @@
 gpio_cfg_t motor_pin_cfg={
         .port = MOTOR_PORT,
         .mask = MOTOR_PIN,
-        .pad = GPIO_PAD_NONE,
-        .func = GPIO_FUNC_OUT
+        .func = GPIO_FUNC_OUT,
+        .pad = GPIO_PAD_NONE
 };
 
 void Motor_Init(){

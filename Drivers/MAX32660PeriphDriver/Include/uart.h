@@ -51,6 +51,10 @@
 
 /***** Definitions *****/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief      Alternate clock rate. (7.3728MHz) */
 #define UART_ALTERNATE_CLOCK_HZ 7372800
@@ -63,30 +67,30 @@
  * @brief Parity settings type */
 typedef enum {
     UART_PARITY_DISABLE = 0,                                /**< Parity disabled */
-    UART_PARITY_EVEN_0  = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_EVEN |
-                           MXC_F_UART_CTRL_PARMD),          /**< Use for even parity 0 */
-    UART_PARITY_EVEN_1  = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_EVEN),    /**< Use for even parity 1 */
-    UART_PARITY_EVEN    = UART_PARITY_EVEN_1,               /**< Conventional even parity */
-    UART_PARITY_ODD_0   = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_ODD |
-                           MXC_F_UART_CTRL_PARMD),          /**< Use for odd parity 0 */
-    UART_PARITY_ODD_1   = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_ODD),     /**< Use for odd parity 1 */
-    UART_PARITY_ODD     = UART_PARITY_ODD_1,                /**< Conventional odd parity */
-    UART_PARITY_MARK_0  = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_MARK |
-                           MXC_F_UART_CTRL_PARMD),          /**< Use for mark parity 0 */
-    UART_PARITY_MARK_1  = (MXC_F_UART_CTRL_PARITY_EN |
-                           MXC_S_UART_CTRL_PARITY_MARK),    /**< Use for mark parity 1 */
-    UART_PARITY_MARK    = UART_PARITY_MARK_1,               /**< Conventional mark parity */
+    UART_PARITY_EVEN_0 = (MXC_F_UART_CTRL_PARITY_EN |
+                          MXC_S_UART_CTRL_PARITY_EVEN |
+                          MXC_F_UART_CTRL_PARMD),          /**< Use for even parity 0 */
+    UART_PARITY_EVEN_1 = (MXC_F_UART_CTRL_PARITY_EN |
+                          MXC_S_UART_CTRL_PARITY_EVEN),    /**< Use for even parity 1 */
+    UART_PARITY_EVEN = UART_PARITY_EVEN_1,               /**< Conventional even parity */
+    UART_PARITY_ODD_0 = (MXC_F_UART_CTRL_PARITY_EN |
+                         MXC_S_UART_CTRL_PARITY_ODD |
+                         MXC_F_UART_CTRL_PARMD),          /**< Use for odd parity 0 */
+    UART_PARITY_ODD_1 = (MXC_F_UART_CTRL_PARITY_EN |
+                         MXC_S_UART_CTRL_PARITY_ODD),     /**< Use for odd parity 1 */
+    UART_PARITY_ODD = UART_PARITY_ODD_1,                /**< Conventional odd parity */
+    UART_PARITY_MARK_0 = (MXC_F_UART_CTRL_PARITY_EN |
+                          MXC_S_UART_CTRL_PARITY_MARK |
+                          MXC_F_UART_CTRL_PARMD),          /**< Use for mark parity 0 */
+    UART_PARITY_MARK_1 = (MXC_F_UART_CTRL_PARITY_EN |
+                          MXC_S_UART_CTRL_PARITY_MARK),    /**< Use for mark parity 1 */
+    UART_PARITY_MARK = UART_PARITY_MARK_1,               /**< Conventional mark parity */
     UART_PARITY_SPACE_0 = (MXC_F_UART_CTRL_PARITY_EN |
                            MXC_S_UART_CTRL_PARITY_SPACE |
                            MXC_F_UART_CTRL_PARMD),          /**< Use for space parity 0 */
     UART_PARITY_SPACE_1 = (MXC_F_UART_CTRL_PARITY_EN |
                            MXC_S_UART_CTRL_PARITY_SPACE),   /**< Use for space parity 1 */
-    UART_PARITY_SPACE   = UART_PARITY_SPACE_1,              /**< Conventional space parity */
+    UART_PARITY_SPACE = UART_PARITY_SPACE_1,              /**< Conventional space parity */
 } uart_parity_t;
 
 /**
@@ -101,23 +105,23 @@ typedef enum {
 /**
  * @brief      Stop bit settings */
 typedef enum {
-    UART_STOP_1   = 0,                                      /**< UART Stop 1 clock cycle */
+    UART_STOP_1 = 0,                                      /**< UART Stop 1 clock cycle */
     UART_STOP_1P5 = MXC_F_UART_CTRL_STOPBITS,               /**< UART Stop 1.5 clock cycle */
-    UART_STOP_2   = MXC_F_UART_CTRL_STOPBITS,               /**< UART Stop 2 clock cycle */
+    UART_STOP_2 = MXC_F_UART_CTRL_STOPBITS,               /**< UART Stop 2 clock cycle */
 } uart_stop_t;
 
 /**
  * @brief      Flow control */
 typedef enum {
     UART_FLOW_CTRL_DIS = 0,                                 /**< RTS/CTS flow is disabled */
-    UART_FLOW_CTRL_EN  = MXC_F_UART_CTRL_FLOW_CTRL,         /**< RTS/CTS flow is enabled */
+    UART_FLOW_CTRL_EN = MXC_F_UART_CTRL_FLOW_CTRL,         /**< RTS/CTS flow is enabled */
 } uart_flow_ctrl_t;
 
 /**
  * @brief      Flow control Polarity */
 typedef enum {
     UART_FLOW_POL_DIS = 0,                                  /**< RTS/CTS asserted is low */
-    UART_FLOW_POL_EN  = MXC_F_UART_CTRL_FLOW_POL,           /**< RTS/CTS asserted is high */
+    UART_FLOW_POL_EN = MXC_F_UART_CTRL_FLOW_POL,           /**< RTS/CTS asserted is high */
 } uart_flow_pol_t;
 
 #if (TARGET != 32660)
@@ -146,6 +150,7 @@ typedef struct {
 /**
  * @brief      Non-blocking UART transaction request. */
 typedef struct uart_req uart_req_t;
+
 struct uart_req {
     uint8_t *data;    /**       Data buffer for characters */
     int len;          /**       Length of characters in data to send or receive */
@@ -158,7 +163,7 @@ struct uart_req {
      * @param   int          Error code.
      *
      */
-    void(*callback)(uart_req_t*, int);
+    void (*callback)(uart_req_t *, int);
 };
 
 
@@ -173,7 +178,7 @@ struct uart_req {
  * @returns #E_NO_ERROR UART initialized successfully, @ref MXC_Error_Codes "error" if
  *             unsuccessful.
  */
-int UART_Init(mxc_uart_regs_t *uart, const uart_cfg_t *cfg, const sys_cfg_uart_t* sys_cfg);
+int UART_Init(mxc_uart_regs_t *uart, const uart_cfg_t *cfg, const sys_cfg_uart_t *sys_cfg);
 
 /**
  * @brief   Shutdown UART module.
@@ -358,6 +363,10 @@ void UART_DrainRX(mxc_uart_regs_t *uart);
  * @param      uart  Pointer to the UART registers.
  */
 void UART_DrainTX(mxc_uart_regs_t *uart);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**@} end of group uart */
 
